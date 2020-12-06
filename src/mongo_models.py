@@ -41,6 +41,7 @@ class CovidColleges(me.Document):
 
 class Zips(me.Document):
     meta = {"collection": "zips"}
+    zipcode = me.StringField(required=True)
     city = me.StringField(required=True)
     loc = me.ListField(field=me.FloatField())
     pop = me.IntField(required=True, min_value=0)
