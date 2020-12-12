@@ -1,17 +1,17 @@
 from flask import Flask, jsonify, render_template
 from flask_assets import Bundle, Environment
-
-# from flask.ext.scss import Scss
 from flask_mongoengine import MongoEngine
 
 from .mongo_models import (
-    CovidUS,
-    CovidUSStates,
-    CovidUSCounties,
     CovidColleges,
+    CovidUS,
+    CovidUSCounties,
+    CovidUSStates,
     Zips,
     Zips2Fips,
+    initialize_mongo_db,
 )
+from .mongo_to_neo import load_neo4j_w_mongo_data
 from .neo_models import *
 
 # init app
@@ -22,7 +22,7 @@ app.config["MONGODB_SETTINGS"] = {
 }
 
 # init db
-mongo_db = MongoEngine(app)
+initialize_mongo_db(app)
 
 # flask assets - styling
 assets = Environment(app)
@@ -83,3 +83,12 @@ def zips2fips():
 
 # ####################################################
 # end mongodb test routes
+
+
+if __name__ == "__main__":
+    # seed neo4j
+    print("Seeding Neo4j...")
+    load_neo4j_w_mongo_data()
+    print("Done Seeding")
+    # Threaded option to enable multiple instances for multiple user access support
+    app.run(threaded=True, port=5000)

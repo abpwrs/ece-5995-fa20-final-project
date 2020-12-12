@@ -1,4 +1,6 @@
-from py2neo.ogm import Model, RelatedTo, RelatedFrom, Property
+from py2neo.ogm import Graph, Model, Property, RelatedFrom, RelatedTo
+
+graph_db = Graph("bolt://localhost:7687", auth=("neo4j", "neo4j"))
 
 # TODO: define relationships
 class Country(Model):
@@ -23,6 +25,7 @@ class Zipcode(Model):
     city = Property()
     loc = Property()
     pop = Property()
+    county_fips = Property()
 
 
 class CovidRecord(Model):
