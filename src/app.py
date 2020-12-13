@@ -88,7 +88,7 @@ def zips2fips():
 if __name__ == "__main__":
     # seed neo4j
     print("Seeding Neo4j...")
-    load_neo4j_w_mongo_data()
+    load_neo4j_w_mongo_data(clear_neo_db=True)
     print("Done Seeding")
     # Threaded option to enable multiple instances for multiple user access support
     app.run(threaded=True, port=5000)

@@ -1,5 +1,6 @@
 from py2neo.ogm import Graph, Model, Property, RelatedFrom, RelatedTo
 
+
 graph_db = Graph("bolt://localhost:7687", auth=("neo4j", "neo4j"))
 
 # example write
