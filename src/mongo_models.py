@@ -1,11 +1,11 @@
 import mongoengine as me
 from flask_mongoengine import MongoEngine
 
-mongo_db = MongoEngine()
+app_mongo_db = MongoEngine()
 
 
 def initialize_mongo_db(app):
-    mongo_db.init_app(app)
+    app_mongo_db.init_app(app)
 
 
 class CovidUS(me.Document):
@@ -57,8 +57,8 @@ class Zips(me.Document):
 
 class Zips2Fips(me.Document):
     meta = {"collection": "zips2fips"}
-    zip = me.IntField(required=True)
+    zip = me.StringField(required=True)
     countyname = me.StringField(required=True)
     state = me.StringField(required=True)
-    stcountyfp = me.IntField(required=True)
+    stcountyfp = me.StringField(required=True)
     classfp = me.StringField(required=True)

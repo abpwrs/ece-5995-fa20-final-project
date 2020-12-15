@@ -1,0 +1,63 @@
+<!doctype html>
+<title>Query1</title>
+{% assets "scss_all" %}
+<link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
+{% endassets %}
+
+<!-- <h1>Hello World, Harsh was Here</h1>
+{% if context.text %}
+<h2>{{context.text}}</h2>
+{% endif %}
+
+{% for c in context.covid %}
+<h3>{{c}}</h3>
+{% endfor %}
+
+{% for n in context.names %}
+    <option value="{{n}}" SELECTED>{{n}}</option>
+{% endfor %} -->
+
+
+<!-- <form name="Item_1" action="/submission" method="POST">
+    <label for="choosingname">Choose name</label>
+        <select name=names>
+            {% for name in context.names %}
+                <option value="{{name}}" SELECTED>{{name}}</option>
+            {% endfor %}     
+        </select>
+        <input type="submit" value="Submit"></input>
+</form> -->
+
+
+{% extends 'bootstrap/base.html' %}
+{% block scripts %}
+  {{ super() }}
+  {{ datepicker.loader() }} {# to load jQuery-ui #}
+  {{ datepicker.picker(id=".dp") }}
+{% endblock %}
+{% block content %}
+  <!-- <form name="DateStart" class="verticalform">
+    <input type="text" value="DateStart" class="form-control dp" />
+  </form>
+  <form name="DateEnd" class="verticalform">
+    <input type="text" name="DateEnd" value="DateEnd" class="form-control dp" />
+  </form> -->
+
+
+  <form name="Item_1" action="/submission" method="POST">
+    <input type="text" name=startDate value="Date Start" class="form-control dp" />
+    <input type="text" name=endDate value="Date End" class="form-control dp" />
+
+    <label for="choosingname">Choose name</label>
+        <select name=states>
+            {% for state in context.states %}
+                <option value="{{state}}" SELECTED>{{state}}</option>
+            {% endfor %}     
+        </select>
+        <input type="submit" value="Submit"></input>
+</form>
+{% endblock %}
+
+
+
+

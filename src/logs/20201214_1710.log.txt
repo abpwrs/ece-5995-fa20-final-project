@@ -1,0 +1,6 @@
+WARNING:root:'NoneType' object has no attribute 'fips'
+WARNING:root:'NoneType' object has no attribute 'fips'
+WARNING:root:'NoneType' object has no attribute 'fips'
+WARNING:root:'NoneType' object has no attribute 'fips'
+WARNING:root:'NoneType' object has no attribute 'fips'
+WARNING:root:'NoneType' object has no attribute 'fips'

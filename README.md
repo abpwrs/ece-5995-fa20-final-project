@@ -2,21 +2,6 @@
 Modern databases (ECE:5995) project querying COVID &amp; population data
 
 
-HARSH WAS HERE
-
-HARSH WAS HERE
-
-HARSH WAS HERE
-
-HARSH WAS HERE
-
-HARSH WAS HERE
-
-HARSH WAS HERE
-
-HARSH WAS HERE
-
-
 ## Datasets
 - [NY Times COVID Dataset](https://github.com/nytimes/covid-19-data)
 - [MongoDB Zipcode Population Dataset](https://media.mongodb.org/zips.json)
