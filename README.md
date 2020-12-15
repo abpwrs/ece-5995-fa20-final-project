@@ -2,6 +2,10 @@
 Modern databases (ECE:5995) project querying COVID &amp; population data
 
 
+Pull submodule with data using:
+```bash
+git submodule update --init
+```
 ## Datasets
 - [NY Times COVID Dataset](https://github.com/nytimes/covid-19-data)
 - [MongoDB Zipcode Population Dataset](https://media.mongodb.org/zips.json)

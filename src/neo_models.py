@@ -41,6 +41,7 @@ class County(Model):
     fips = Property()
     name = Property()
     pop = Property()
+    state = Property()
 
     located_in = RelatedTo(State, "LOCATED_IN")
     recorded_in = RelatedFrom(CovidRecord, "RECORDED_IN")

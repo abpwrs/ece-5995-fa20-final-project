@@ -1,0 +1,17 @@
+How many covid cases are there for a state?
+                                   a county (fip)?
+
+How many covid cases are there for a region (lat and long)?
+
+How many more (or less) cases are there from date _____ to date ______?
+         (percent increase and decrease)
+
+
+:auto USING PERIODIC COMMIT 500
+LOAD CSV WITH HEADERS FROM "file:///movies.csv" AS row
+MERGE (m:Movie {movieId: toInteger(row.movieId), title:row.title})
+WITH m, row
+UNWIND split(row.genres,'|') AS genres
+MERGE (g:Genre {name: genres})
+MERGE (m)-[r:IN_GENRE]->(g);
+

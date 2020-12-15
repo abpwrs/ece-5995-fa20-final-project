@@ -40,10 +40,9 @@ QUERIES = [
 ]
 
 # define app routes
-@app.route("/")
+@app.route("/", methods=["GET"])
 def startup():
     context = {}
-    context["queries"] = ["Why is Harsh the best?", "Why is Alex poopy?", "Why is Colton?"]
     context["queries"] = ["Why is Harsh the best?", "Why is Alex poopy?", "Why is Colton?"]
     context["queries"] = [(i, txt)  for i, txt in enumerate(context["queries"])]
     return render_template("index.html", context=context)
@@ -78,7 +77,6 @@ def index(text=None):
 #     return redirect("/")
 
 
-
 @app.route("/query1", methods=["GET", "POST"])
 def query1():
     names = ["Harsh", "Alex", "Colton"]
@@ -95,9 +93,12 @@ def dropdown_submission():
     print("\n\nDateStart:", request.form.get('startDate'))
     print("\n\nDateEnd:", request.form.get('endDate'))
     print("\n\nState:", request.form.get('states'), "\n\n")
-    print(request.form)
-    return redirect("/")
-
+    # print(request.form)
+    asdf = "asdf"
+    context = {}
+    context['output'] = request.form.get('states')  
+    print(context.get('output'))
+    return render_template("query1.html", context=context)
 
 
 # start mongodb test routes

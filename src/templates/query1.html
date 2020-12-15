@@ -28,6 +28,10 @@
         <input type="submit" value="Submit"></input>
 </form> -->
 
+<form method="get" action="/">
+  <input type="submit" value="Back"/>
+</form>
+
 
 {% extends 'bootstrap/base.html' %}
 {% block scripts %}
@@ -59,5 +63,7 @@
 {% endblock %}
 
 
-
+{% if context.output %}
+<h2>{{context.output}}</h2>
+{% endif %}
 
