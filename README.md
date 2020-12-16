@@ -2,19 +2,19 @@
 Modern databases (ECE:5995) project querying COVID &amp; population data
 
 
-HARSH WAS HERE
+Pull submodule with data using:
+```bash
+git submodule update --init
+```
 
-HARSH WAS HERE
-
-HARSH WAS HERE
-
-HARSH WAS HERE
-
-HARSH WAS HERE
-
-HARSH WAS HERE
-
-HARSH WAS HERE
+db.zips2fips.createIndex(
+  {
+      "zip": 1
+  },
+  {
+      unique: true,
+  }
+)
 
 
 ## Datasets
