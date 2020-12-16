@@ -5,17 +5,18 @@ import logging
 from datetime import datetime
 
 
-TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M")  
+TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M")
 log_fname = f"logs/{TIMESTAMP}.log.txt"
 logging.basicConfig(filename=log_fname, level=logging.WARNING)
 
 me.connect("covid")
 # create a standalone mongo_db connection (not connected to flask app)
 
+
 def load_zipcodes():
     print("Loading zipcode data")
-    for zip in tqdm(Zips.objects):
-        zipcode_value = zip.zipcode
+    for zip_ob in tqdm(Zips.objects):
+        zipcode_value = zip_ob.zipcode
         # for each zipcode grab the county FIPS code
         try:
             zip2fip = Zips2Fips.objects(zip=zipcode_value)[0]
@@ -24,14 +25,15 @@ def load_zipcodes():
             # print(type(zipcode_value), type(county_fips))
             neo_zip_node = Zipcode()
             neo_zip_node.zipcode = zipcode_value
-            neo_zip_node.city = zip.city
-            neo_zip_node.loc = zip.loc
-            neo_zip_node.pop = zip.pop
+            neo_zip_node.city = zip_ob.city
+            neo_zip_node.loc = zip_ob.loc
+            neo_zip_node.pop = zip_ob.pop
             neo_zip_node.county_fips = county_fips
             graph_db.merge(neo_zip_node)
 
         except IndexError as e:
             logging.warning(f"NO FIP FOR Zips(zipcode={zipcode_value})")
+
 
 def load_counties():
     print("Loading county coivd data")
@@ -39,7 +41,11 @@ def load_counties():
     for county_ob in tqdm(CovidUSCounties.objects):
         county_name = county_ob.county
         try:
-            county_is_in_graph = bool(graph_db.run(f"MATCH (c:County {{ fips: {county_ob.fips} }}) RETURN c").data())
+            county_is_in_graph = bool(
+                graph_db.run(
+                    f"MATCH (c:County {{ fips: {county_ob.fips} }}) RETURN c"
+                ).data()
+            )
 
             if not county_is_in_graph:
                 neo_county_node = County()
@@ -49,13 +55,15 @@ def load_counties():
 
                 # no relations to this node (yet)
                 graph_db.merge(neo_county_node)
-            
-                zipcodes_in_county = list(Zipcode.match(graph_db).where(f"_.county_fips = {county_ob.fips}"))
+
+                zipcodes_in_county = list(
+                    Zipcode.match(graph_db).where(f"_.county_fips = {county_ob.fips}")
+                )
 
                 # print(zipcodes_in_county)
                 # -- loop and create relations to the neo_county_noed
                 for zipcode_node in zipcodes_in_county:
-                    command_string = f"MATCH (c:County {{fips:{neo_county_node.fips}}}), (z:Zipcode {{zipcode:\"{zipcode_node.zipcode}\"}}) MERGE (c)<-[:LOCATED_IN]-(z) RETURN c, z"
+                    command_string = f'MATCH (c:County {{fips:{neo_county_node.fips}}}), (z:Zipcode {{zipcode:"{zipcode_node.zipcode}"}}) MERGE (c)<-[:LOCATED_IN]-(z) RETURN c, z'
                     graph_db.run(command_string)
 
             # create covid record for the county
@@ -66,17 +74,18 @@ def load_counties():
             covid_record = graph_db.merge(covid_record)
 
             # nope, it will be mapped to a County, State or US, using [:RECORDED_IN]
-            
+
             # TODO: create covid record and map it to the county object
             command_string = f"MATCH (c:County {{fips:{county_ob.fips}}}), (covid:CovidRecord {{id: {covid_record.__primaryvalue__}}}) MERGE (c)<-[:RECORDED_IN]-(covid) RETURN c, covid"
             graph_db.run(command_string)
-            
+
         except Exception as e:
             logging.warning(e)
 
     # Sum population for each county
     command_string = f"MATCH (c:County)<-[:LOCATED_IN]-(z:Zipcode) SET c.pop = SUM(z.pop) RETURN c, z"
     graph_db.run(command_string)
+
 
 def load_states():
     print("Loading state covid data")
@@ -85,7 +94,11 @@ def load_states():
         state_name = state_ob.state
         print(state_name)
         try:
-            state_is_in_graph = bool(graph_db.run(f"MATCH (s:State {{ name: {state_ob.state} }}) RETURN s").data())
+            state_is_in_graph = bool(
+                graph_db.run(
+                    f"MATCH (s:State {{ name: {state_ob.state} }}) RETURN s"
+                ).data()
+            )
             if not state_is_in_graph:
                 neo_state_node = State()
                 neo_state_node.fips = state_ob.fips
@@ -93,16 +106,17 @@ def load_states():
 
                 # no relations to this node (yet)
                 graph_db.merge(neo_state_node)
-            
+
                 # match based on state name
-                counties_in_state = list(County.match(graph_db).where(f"_.state = {state_ob.state}"))
+                counties_in_state = list(
+                    County.match(graph_db).where(f"_.state = {state_ob.state}")
+                )
 
                 # print(zipcodes_in_county)
                 # -- loop and create relations to the neo_county_noed
                 for county_node in counties_in_state:
                     command_string = f"MATCH (s:State {{name:{neo_state_node.name}}}), (c:County {{fips: {county_node.fips}}}) MERGE (s)<-[:LOCATED_IN]-(c) RETURN s, c"
                     graph_db.run(command_string)
-
 
             # create covid record for the state
             covid_record = CovidRecord()
@@ -112,26 +126,29 @@ def load_states():
             covid_record = graph_db.merge(covid_record)
 
             # nope, it will be mapped to a County, State or US, using [:RECORDED_IN]
-            
+
             # TODO: create covid record and map it to the county object
             command_string = f"MATCH (s:State {{name:{state_ob.state}}}), (covid:CovidRecord {{id: {covid_record.__primaryvalue__}}}) MERGE (s)<-[:RECORDED_IN]-(covid) RETURN c, covid"
             graph_db.run(command_string)
-            
+
         except Exception as e:
             logging.warning(e)
 
         # Sum population for each state
-    command_string = f"MATCH (s:State)<-[:LOCATED_IN]-(c:County) SET s.pop = SUM(c.pop) RETURN s, c"
+    command_string = (
+        f"MATCH (s:State)<-[:LOCATED_IN]-(c:County) SET s.pop = SUM(c.pop) RETURN s, c"
+    )
     graph_db.run(command_string)
+
 
 def load_us():
     print("Loading US covid data")
     neo_us_node = Country()
     neo_us_node.name = "us"
-    
-    command_string = f"MATCH (s:State), (c:Country {{name: \"us\"}}) MERGE (c)<-[:LOCATED_IN]-(s) RETURN c, s"
+
+    command_string = f'MATCH (s:State), (c:Country {{name: "us"}}) MERGE (c)<-[:LOCATED_IN]-(s) RETURN c, s'
     graph_db.run(command_string)
-    
+
     for country_ob in tqdm(CovidUS.objects):
         covid_record = CovidRecord()
         covid_record.cases = country_ob.cases
@@ -139,13 +156,16 @@ def load_us():
         covid_record.date = country_ob.date
 
         covid_record = graph_db.merge(covid_record)
-            
-        command_string = f"MATCH (c:Country {{name: \"us\"}}), (covid:CovidRecord {{id: {covid_record.__primaryvalue__}}}) MERGE (c)<-[:RECORDED_IN]-(covid) RETURN c, covid"
+
+        command_string = f'MATCH (c:Country {{name: "us"}}), (covid:CovidRecord {{id: {covid_record.__primaryvalue__}}}) MERGE (c)<-[:RECORDED_IN]-(covid) RETURN c, covid'
         graph_db.run(command_string)
 
     # Sum population for each state
-    command_string = f"MATCH (c:Country)<-[:LOCATED_IN]-(s:State) SET c.pop = SUM(s.pop) RETURN s, c"
+    command_string = (
+        f"MATCH (c:Country)<-[:LOCATED_IN]-(s:State) SET c.pop = SUM(s.pop) RETURN s, c"
+    )
     graph_db.run(command_string)
+
 
 def load_neo4j_w_mongo_data(clear_neo_db=False):
     if clear_neo_db:
@@ -153,12 +173,23 @@ def load_neo4j_w_mongo_data(clear_neo_db=False):
         graph_db.run("MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n, r")
         print("neo4j data wiped")
 
+        print("adding constraints to speed up system")
+        graph_db.run(
+            "CREATE CONSTRAINT county_fips_unique IF NOT EXISTS ON (c:County) ASSERT c.fips IS UNIQUE"
+        )
+        graph_db.run(
+            "CREATE CONSTRAINT zipcode_zipcode_unique IF NOT EXISTS ON (z:Zipcode) ASSERT z.zipcode IS UNIQUE"
+        )
+        graph_db.run(
+            "CREATE CONSTRAINT state_fips_unique IF NOT EXISTS ON (s:State) ASSERT s.fips IS UNIQUE"
+        )
+
     # plan
 
     # load zipcodes & extract fips for each zipcode
 
     # TODO: uncomment before submission
-    # load_zipcodes()
+    load_zipcodes()
 
     # load county covid cases
     # - create relation between covid records and county
@@ -172,7 +203,6 @@ def load_neo4j_w_mongo_data(clear_neo_db=False):
     # - create relation between states and counties
     load_states()
 
-
     # load us covid cases
     # - create relation between covid records and us country node
     # - create realtion between all states and the us country node
@@ -180,4 +210,4 @@ def load_neo4j_w_mongo_data(clear_neo_db=False):
 
 
 if __name__ == "__main__":
-    load_neo4j_w_mongo_data(clear_neo_db=False)
+    load_neo4j_w_mongo_data(clear_neo_db=True)

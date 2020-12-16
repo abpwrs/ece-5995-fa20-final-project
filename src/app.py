@@ -33,25 +33,26 @@ scss = Bundle("index.scss", filters="pyscss", output="gen/all.css")
 assets.register("scss_all", scss)
 
 # TODO:
-QUERIES = [
-    "/query1",
-    "/query2",
-    "/query3"
-]
+QUERIES = ["/query1", "/query2", "/query3"]
 
 # define app routes
 @app.route("/", methods=["GET"])
 def startup():
     context = {}
-    context["queries"] = ["Why is Harsh the best?", "Why is Alex poopy?", "Why is Colton?"]
-    context["queries"] = [(i, txt)  for i, txt in enumerate(context["queries"])]
+    context["queries"] = [
+        "Why is Harsh the best?",
+        "Why is Alex poopy?",
+        "Why is Colton?",
+    ]
+    context["queries"] = [(i, txt) for i, txt in enumerate(context["queries"])]
     return render_template("index.html", context=context)
+
 
 @app.route("/pick", methods=["POST"])
 def pick():
     print("\n\n", request.form, "\n\n")
     print(request.form)
-    return redirect(QUERIES[int(request.form.get('queries'))])
+    return redirect(QUERIES[int(request.form.get("queries"))])
 
 
 @app.route("/text/<text>")
@@ -80,24 +81,82 @@ def index(text=None):
 @app.route("/query1", methods=["GET", "POST"])
 def query1():
     names = ["Harsh", "Alex", "Colton"]
-    states = ["Alabama", "Alaska", "American Samoa", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia", "Guam", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Minor Outlying Islands", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Northern Mariana Islands", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Puerto Rico", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "U.S. Virgin Islands", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"]
+    states = [
+        "Alabama",
+        "Alaska",
+        "American Samoa",
+        "Arizona",
+        "Arkansas",
+        "California",
+        "Colorado",
+        "Connecticut",
+        "Delaware",
+        "District of Columbia",
+        "Florida",
+        "Georgia",
+        "Guam",
+        "Hawaii",
+        "Idaho",
+        "Illinois",
+        "Indiana",
+        "Iowa",
+        "Kansas",
+        "Kentucky",
+        "Louisiana",
+        "Maine",
+        "Maryland",
+        "Massachusetts",
+        "Michigan",
+        "Minnesota",
+        "Minor Outlying Islands",
+        "Mississippi",
+        "Missouri",
+        "Montana",
+        "Nebraska",
+        "Nevada",
+        "New Hampshire",
+        "New Jersey",
+        "New Mexico",
+        "New York",
+        "North Carolina",
+        "North Dakota",
+        "Northern Mariana Islands",
+        "Ohio",
+        "Oklahoma",
+        "Oregon",
+        "Pennsylvania",
+        "Puerto Rico",
+        "Rhode Island",
+        "South Carolina",
+        "South Dakota",
+        "Tennessee",
+        "Texas",
+        "U.S. Virgin Islands",
+        "Utah",
+        "Vermont",
+        "Virginia",
+        "Washington",
+        "West Virginia",
+        "Wisconsin",
+        "Wyoming",
+    ]
     context = {}
-    context['names'] = names
-    context['states'] = states
+    context["names"] = names
+    context["states"] = states
     return render_template("query1.html", context=context)
 
 
 @app.route("/submission", methods=["POST"])
 def dropdown_submission():
     # print("\n\n", request.form, "\n\n")
-    print("\n\nDateStart:", request.form.get('startDate'))
-    print("\n\nDateEnd:", request.form.get('endDate'))
-    print("\n\nState:", request.form.get('states'), "\n\n")
+    print("\n\nDateStart:", request.form.get("startDate"))
+    print("\n\nDateEnd:", request.form.get("endDate"))
+    print("\n\nState:", request.form.get("states"), "\n\n")
     # print(request.form)
     asdf = "asdf"
     context = {}
-    context['output'] = request.form.get('states')  
-    print(context.get('output'))
+    context["output"] = request.form.get("states")
+    print(context.get("output"))
     return render_template("query1.html", context=context)
 
 

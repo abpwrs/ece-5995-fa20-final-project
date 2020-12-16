@@ -60,5 +60,5 @@ class Zips2Fips(me.Document):
     zip = me.StringField(required=True)
     countyname = me.StringField(required=True)
     state = me.StringField(required=True)
-    stcountyfp = me.IntField(required=True)
+    stcountyfp = me.StringField(required=True)
     classfp = me.StringField(required=True)

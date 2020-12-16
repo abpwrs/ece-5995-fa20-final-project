@@ -24,6 +24,7 @@ class Country(Model):
     __primarykey__ = "name"
     name = Property()
     pop = Property()
+    recorded_in = RelatedFrom(CovidRecord, "RECORDED_IN")
 
 
 class State(Model):
@@ -56,4 +57,3 @@ class Zipcode(Model):
     county_fips = Property()
 
     located_in = RelatedTo(County, "LOCATED_IN")
-    recorded_in = RelatedFrom(CovidRecord, "RECORDED_IN")

@@ -6,6 +6,17 @@ Pull submodule with data using:
 ```bash
 git submodule update --init
 ```
+
+db.zips2fips.createIndex(
+  {
+      "zip": 1
+  },
+  {
+      unique: true,
+  }
+)
+
+
 ## Datasets
 - [NY Times COVID Dataset](https://github.com/nytimes/covid-19-data)
 - [MongoDB Zipcode Population Dataset](https://media.mongodb.org/zips.json)
