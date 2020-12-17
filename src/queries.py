@@ -18,7 +18,7 @@ def validate_date_range_state(start_date, end_date, state_name):
     return start_date, end_date
 
 
-def validate_date_range_state(start_date, end_date, state_name, county_name):
+def validate_date_range_county(start_date, end_date, state_name, county_name):
     oldest = oldest_record_for_county(state_name=state_name, county_name=county_name)
     newest = newest_record_for_county(state_name=state_name, county_name=county_name)
 

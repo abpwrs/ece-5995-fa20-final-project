@@ -15,15 +15,12 @@
   {% assets "js_all" %}
   <script type="text/javascript" src="{{ ASSET_URL }}"></script>
   {% endassets %} 
-  <title>{% block title %}{% endblock %}</title>
+  <title>{% block title %} covid-19 App{% endblock %}</title>
   {% endblock %}
 </head>
 
 <body>
   <div id="content">{% block content %}{% endblock %}</div>
-  <div id="footer">
-    {% block footer %}{% endblock %}
-  </div>
 </body>
 
 </html>

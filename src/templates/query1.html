@@ -1,46 +1,14 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<!-- <h1>Hello World, Harsh was Here</h1>
-{% if context.text %}
-<h2>{{context.text}}</h2>
-{% endif %}
-
-{% for c in context.covid %}
-<h3>{{c}}</h3>
-{% endfor %}
-
-{% for n in context.names %}
-    <option value="{{n}}" SELECTED>{{n}}</option>
-{% endfor %} -->
-
-
-<!-- <form name="Item_1" action="/submission" method="POST">
-    <label for="choosingname">Choose name</label>
-        <select name=names>
-            {% for name in context.names %}
-                <option value="{{name}}" SELECTED>{{name}}</option>
-            {% endfor %}     
-        </select>
-        <input type="submit" value="Submit"></input>
-</form> -->
-
 <form method="get" action="/">
+  {% if context.query_name %}
+  <h3>{{context.query_name}}</h3>
+  {% endif %}
   <input type="submit" value="Back" />
 </form>
 
-
-<!-- <form name="DateStart" class="verticalform">
-    <input type="text" value="DateStart" class="form-control dp" />
-  </form>
-  <form name="DateEnd" class="verticalform">
-    <input type="text" name="DateEnd" value="DateEnd" class="form-control dp" />
-  </form> -->
-
-
 <form name="Item_1" action="/submission1" method="POST">
-  <input type="text" name=startDate value="Date Start" class="form-control dp" />
-  <input type="text" name=endDate value="Date End" class="form-control dp" />
 
   <label for="choosingname">Choose State</label>
   <select name=states>
@@ -48,12 +16,14 @@
     <option value="{{state}}" SELECTED>{{state}}</option>
     {% endfor %}
   </select>
+  <input type="text" name=startDate value="Date Start" class="form-control dp" />
+  <input type="text" name=endDate value="Date End" class="form-control dp" />
   <input type="submit" value="Submit">
 </form>
 
 
 {% if context.output %}
-<h2>{{context.output}}</h2>
+{{context.output}}
 {% endif %}
 
 {% endblock %}

@@ -40,11 +40,11 @@ assets.register("js_all", js)
 # TODO:
 QUERY_ROUTES = ["/query1", "/query2", "/query3", "/query4", "/query5", "/query6"]
 QUERY_TEXT = [
-    "Number of cases in a state over a date range",  # params for state, start date, and end date               - get_cases_by_state
-    "Number of cases in a county over a date range",  # params for state, county, start date, and end date      - get_cases_by_county
+    "Number of cases in a state over a date range",  # params for state, start date, and end date               - get_cases_by_state - DONE
+    "Number of cases in a county over a date range",  # params for state, county, start date, and end date      - get_cases_by_county - DONE
     
-    "Rank counties by net cases",  # params for start, end date, and state, and county                          - get_ranked_cases_by_county
-    "Rank counties by cases as percentage of population",  # params for start, end date, state, and county      - get_ranked_cases_by_county_as_pop_percentage
+    "Rank counties by net cases",  # params for start, end date, and state                                      - get_ranked_cases_by_county - DONE
+    "Rank counties by cases as percentage of population",  # params for start, end date, and state              - get_ranked_cases_by_county_as_pop_percentage
 
     "Rank states by net cases",  # params for start, end date                                                   - get_ranked_cases_by_state
     "Rank states by cases as percentage of population",  # params for start, end date,                          - get_ranked_cases_by_state_as_pop_percentage
@@ -71,6 +71,8 @@ def pick():
 @app.route("/query1", methods=["GET"])
 def query1():
     context = {}
+    context["query_name"] = QUERY_TEXT[0]
+    counties = ["Please Insert State"]
     context["states"] = STATES
     return render_template("query1.html", context=context)
 
@@ -84,6 +86,14 @@ def dropdown_submission():
     context["output"] = request.form.get("states")
     context["states"] = STATES
     print(context.get("output"))
+
+    
+    state_name = request.form.get("states")
+    start_date = request.form.get("startDate")
+    end_date = request.form.get("endDate")
+    start_date, end_date = validate_date_range_state(start_date, end_date, state_name)
+    context['output'] = get_cases_by_state(state_name, start_date, end_date)
+
     return render_template("query1.html", context=context)
 
 
@@ -92,6 +102,7 @@ def dropdown_submission():
 @app.route("/query2/<state>", methods=["GET"])
 def query2(state=None):
     context = {}
+    context["query_name"] = QUERY_TEXT[1]
     counties = ["Please Insert State"]
     if state:
         context['selected_state'] = state
@@ -107,7 +118,6 @@ def query2(state=None):
 def dropdown_submission2():
     print(request.form)
     context = {}
-    STATE_CURR = request.form.get("states")
     if request.form.get("countys") == "Please Insert State":
         return render_template("query2.html", context=context)
 
@@ -118,21 +128,32 @@ def dropdown_submission2():
     context["output"] = request.form.get("states")
     context["states"] = STATES
     # print(context.get("output"))
+
+    state_name = request.form.get("states")
+    start_date = request.form.get("startDate")
+    end_date = request.form.get("endDate")
+    county_name = request.form.get("countys")
+    start_date, end_date = validate_date_range_county(start_date, end_date, state_name=state_name, county_name=county_name)
+    context['output'] = get_cases_by_county(state_name, county_name, start_date, end_date)
+
+
     return render_template("query2.html", context=context)
 
 
 # Query 3
 @app.route("/query3", methods=["GET"])
-@app.route("/query3/<state>", methods=["GET"])
+# @app.route("/query3/<state>", methods=["GET"])
 def query3(state=None):
     context = {}
+    context["query_name"] = QUERY_TEXT[2]
     counties = ["Please Insert State"]
-    if state:
-        context['selected_state'] = state
-        counties = get_counties(state)
+    # counties = None
+    # if state:
+    #     context['selected_state'] = state
+    #     counties = get_counties(state)
 
     context["states"] = STATES
-    context["countys"] = counties
+    # context["countys"] = counties
     # print(context["countys"])
     return render_template("query3.html", context=context)
 
@@ -141,68 +162,112 @@ def query3(state=None):
 def dropdown_submission3():
     print(request.form)
     context = {}
-    STATE_CURR = request.form.get("states")
-    if request.form.get("countys") == "Please Insert State":
-        return render_template("query3.html", context=context)
+    # if request.form.get("countys") == "Please Insert State":
+    #     return render_template("query3.html", context=context)
 
     print("\n\nDateStart:", request.form.get("startDate"))
     print("\n\nDateEnd:", request.form.get("endDate"))
     print("\n\nState:", request.form.get("states"), "\n\n")
-    print("\nCounty:", request.form.get("countys"), "\n\n")
+    # print("\nCounty:", request.form.get("countys"), "\n\n")
     context["output"] = request.form.get("states")
     context["states"] = STATES
     # print(context.get("output"))
+    state_name = request.form.get("states")
+    start_date = request.form.get("startDate")
+    end_date = request.form.get("endDate")
+    start_date, end_date = validate_date_range_state(start_date, end_date, state_name)
+    context['output'] = get_ranked_cases_by_county(state_name, start_date, end_date)
     return render_template("query3.html", context=context)
 
 
+# Query 4
+@app.route("/query4", methods=["GET"])
+# @app.route("/query4/<state>", methods=["GET"])
+def query4(state=None):
+    context = {}
+    context["query_name"] = QUERY_TEXT[3]
+    # counties = ["Please Insert State"]
+    # if state:
+    #     context['selected_state'] = state
+    #     counties = get_counties(state)
 
-# start mongodb test routes
-# ####################################################
-@app.route("/first/covidus")
-def covidus():
-    covidus_data = CovidUS.objects().first()
-    print(covidus_data, type(covidus_data))
-    return jsonify(covidus_data)
-
-
-@app.route("/first/covidusstates")
-def covidusstates():
-    covidus_data = CovidUSStates.objects().first()
-    print(covidus_data, type(covidus_data))
-    return jsonify(covidus_data)
-
-
-@app.route("/first/coviduscounties")
-def coviduscounties():
-    covidus_data = CovidUSCounties.objects().first()
-    print(covidus_data, type(covidus_data))
-    return jsonify(covidus_data)
+    context["states"] = STATES
+    # context["countys"] = counties
+    # print(context["countys"])
+    return render_template("query4.html", context=context)
 
 
-@app.route("/first/covidcolleges")
-def covidcolleges():
-    covidus_data = CovidColleges.objects().first()
-    print(covidus_data, type(covidus_data))
-    return jsonify(covidus_data)
+@app.route("/submission4", methods=["POST"])
+def dropdown_submission4():
+    print(request.form)
+    context = {}
+    # if request.form.get("countys") == "Please Insert State":
+    #     return render_template("query4.html", context=context)
+
+    print("\n\nDateStart:", request.form.get("startDate"))
+    print("\n\nDateEnd:", request.form.get("endDate"))
+    print("\n\nState:", request.form.get("states"), "\n\n")
+    # print("\nCounty:", request.form.get("countys"), "\n\n")
+    context["output"] = request.form.get("states")
+    context["states"] = STATES
+    # print(context.get("output"))
+    state_name = request.form.get("states")
+    start_date = request.form.get("startDate")
+    end_date = request.form.get("endDate")
+    start_date, end_date = validate_date_range_state(start_date, end_date, state_name)
+    context['output'] = get_ranked_cases_by_county_as_pop_percentage(state_name, start_date, end_date)
+    return render_template("query4.html", context=context)
+
+# Query 5
+@app.route("/query5", methods=["GET"])
+def query5():
+    context = {}
+    context["query_name"] = QUERY_TEXT[4]
+    counties = ["Please Insert State"]
+    context["states"] = STATES
+    return render_template("query5.html", context=context)
 
 
-@app.route("/first/zips")
-def zips():
-    covidus_data = Zips.objects().first()
-    print(covidus_data, type(covidus_data))
-    return jsonify(covidus_data)
+@app.route("/submission5", methods=["POST"])
+def dropdown_submission5():
+    print("\n\nDateStart:", request.form.get("startDate"))
+    print("\n\nDateEnd:", request.form.get("endDate"))
+    context = {}
+    context["states"] = STATES
+    print(context.get("output"))
+
+    start_date = request.form.get("startDate")
+    end_date = request.form.get("endDate")
+    # start_date, end_date = validate_date_range_state(start_date, end_date) # -- TODO: validate across all states
+    context['output'] = get_ranked_cases_by_state(start_date, end_date)
+    return render_template("query5.html", context=context)
 
 
-@app.route("/first/zips2fips")
-def zips2fips():
-    covidus_data = Zips2Fips.objects().first()
-    print(covidus_data, type(covidus_data))
-    return jsonify(covidus_data)
+# Query 6
+@app.route("/query6", methods=["GET"])
+def query6():
+    context = {}
+    context["query_name"] = QUERY_TEXT[5]
+    counties = ["Please Insert State"]
+    context["states"] = STATES
+    return render_template("query6.html", context=context)
 
 
-# ####################################################
-# end mongodb test routes
+@app.route("/submission6", methods=["POST"])
+def dropdown_submission6():
+    print("\n\nDateStart:", request.form.get("startDate"))
+    print("\n\nDateEnd:", request.form.get("endDate"))
+    context = {}
+    context["output"] = request.form.get("states")
+    context["states"] = STATES
+    print(context.get("output"))
 
+    start_date = request.form.get("startDate")
+    end_date = request.form.get("endDate")
+    # start_date, end_date = validate_date_range_state(start_date, end_date) # -- TODO: validate across all states
+    context['output'] = get_ranked_cases_by_state_as_pop_percentage(start_date, end_date)
+    return render_template("query6.html", context=context)
+    
 if __name__ == "__main__":
     # Threaded option to enable multiple instances for multiple user access support
     app.run(threaded=True, port=5000)

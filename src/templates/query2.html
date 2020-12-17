@@ -2,12 +2,13 @@
 {% block content %}
 
 <form method="get" action="/">
+    {% if context.query_name %}
+    <h3>{{context.query_name}}</h3>
+    {% endif %}
     <input type="submit" value="Back" />
 </form>
 
 <form name="Item_2" action="/submission2" method="POST">
-    <input type="text" name=startDate value="Date Start" class="form-control dp" />
-    <input type="text" name=endDate value="Date End" class="form-control dp" />
 
     <label for="choosingname">Choose State</label>
     <select onchange="query_two_state_update(this.value)" name=states>
@@ -29,13 +30,16 @@
         <option value="{{county}}" SELECTED>{{county}}</option>
         {% endfor %}
     </select>
+
+    <input type="text" name=startDate value="Date Start" class="form-control dp" />
+    <input type="text" name=endDate value="Date End" class="form-control dp" />
     {% endif %}
 
     <input type="submit" value="Submit"/>
 </form>
 
 {% if context.output %}
-<h2>{{context.output}}</h2>
+{{context.output}}
 {% endif %}
 
 {% endblock %}

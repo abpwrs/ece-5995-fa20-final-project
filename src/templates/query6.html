@@ -9,15 +9,8 @@
 </form>
 
 
-<form name="Item_3" action="/submission3" method="POST">
-  
+<form name="Item_6" action="/submission6" method="POST">
 
-  <label for="choosingname">Choose State</label>
-  <select name=states>
-    {% for state in context.states %}
-    <option value="{{state}}" SELECTED>{{state}}</option>
-    {% endfor %}
-  </select>
   <input type="text" name=startDate value="Date Start" class="form-control dp" />
   <input type="text" name=endDate value="Date End" class="form-control dp" />
   <input type="submit" value="Submit">
