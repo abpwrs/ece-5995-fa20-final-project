@@ -23,7 +23,7 @@ pip install -r requirements.txt
 cd scripts
 for ff in ./*.bash; do echo $ff; bash $ff; done   
 ```
-5. load data to neo4j
+5. Load data to neo4j
 ```bash
 cd src
 python mongo_to_neo_two.py
