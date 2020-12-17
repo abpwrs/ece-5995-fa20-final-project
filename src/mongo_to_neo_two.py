@@ -33,7 +33,7 @@ def load_zipcodes():
             )
         except IndexError as e:
             logging.warning(f"NO FIP FOR Zips(zipcode={zip_ob.zipcode})")
-        
+
     q = """
     UNWIND $data_d AS data
     MERGE (z:Zipcode { zipcode: data.zipcode, county_fips: data.county_fips, city: data.city, loc: data.loc, pop: data.pop})
@@ -48,23 +48,22 @@ def load_counties():
         county_data.append(
             {
                 # county data
-                "fips" : str(county_ob.fips).zfill(5),
+                "fips": str(county_ob.fips).zfill(5),
                 "name": county_ob.county,
                 "state": county_ob.state,
-
                 # covid record data
                 "cases": county_ob.cases,
                 "deaths": county_ob.deaths,
-                "date": county_ob.date
+                "date": county_ob.date,
             }
         )
 
     # https://www.geeksforgeeks.org/break-list-chunks-size-n-python/
     # load data in batches
-    def divide_chunks(l, n): 
-        # looping till length l 
-        for i in range(0, len(l), n):  
-            yield l[i:i + n] 
+    def divide_chunks(l, n):
+        # looping till length l
+        for i in range(0, len(l), n):
+            yield l[i : i + n]
 
     data = list(divide_chunks(county_data, 10000))
     for batch in tqdm(data):
@@ -96,22 +95,21 @@ def load_states():
         state_data.append(
             {
                 # county data
-                "fips" : str(state_ob.fips).zfill(2),
+                "fips": str(state_ob.fips).zfill(2),
                 "name": state_ob.state,
-
                 # covid record data
                 "cases": state_ob.cases,
                 "deaths": state_ob.deaths,
-                "date": state_ob.date
+                "date": state_ob.date,
             }
         )
 
     # https://www.geeksforgeeks.org/break-list-chunks-size-n-python/
     # load data in batches
-    def divide_chunks(l, n): 
-        # looping till length l 
-        for i in range(0, len(l), n):  
-            yield l[i:i + n] 
+    def divide_chunks(l, n):
+        # looping till length l
+        for i in range(0, len(l), n):
+            yield l[i : i + n]
 
     data = list(divide_chunks(state_data, 1000))
     for batch in tqdm(data):
@@ -132,16 +130,14 @@ def load_states():
     graph_db.run(q)
 
     # Sum population for each state
-    command_string = (
-        f"MATCH (s:State)<-[:LOCATED_IN]-(c:County) WITH s, SUM(c.pop) AS s_pop SET s.pop = s_pop"
-    )
+    command_string = f"MATCH (s:State)<-[:LOCATED_IN]-(c:County) WITH s, SUM(c.pop) AS s_pop SET s.pop = s_pop"
     graph_db.run(command_string)
 
 
 def load_us():
     print("Loading US covid data")
 
-    command_string = f"MERGE (c:Country {{name: \"us\"}})"
+    command_string = f'MERGE (c:Country {{name: "us"}})'
     graph_db.run(command_string)
 
     us_data = []
@@ -151,14 +147,14 @@ def load_us():
                 # covid record data
                 "cases": state_ob.cases if state_ob.cases else 0,
                 "deaths": state_ob.deaths if state_ob.deaths else 0,
-                "date": state_ob.date
+                "date": state_ob.date,
             }
         )
 
-    def divide_chunks(l, n): 
-        # looping till length l 
-        for i in range(0, len(l), n):  
-            yield l[i:i + n] 
+    def divide_chunks(l, n):
+        # looping till length l
+        for i in range(0, len(l), n):
+            yield l[i : i + n]
 
     data = list(divide_chunks(us_data, 100))
     for batch in tqdm(data):
@@ -177,21 +173,15 @@ def load_us():
     graph_db.run(q)
 
     # Sum population for each state
-    command_string = (
-        f"MATCH (c:Country {{name: \"us\"  }})<-[:LOCATED_IN]-(s:State) WITH c, SUM(s.pop) AS c_pop SET c.pop = c_pop"
-    )
+    command_string = f'MATCH (c:Country {{name: "us"  }})<-[:LOCATED_IN]-(s:State) WITH c, SUM(s.pop) AS c_pop SET c.pop = c_pop'
     graph_db.run(command_string)
+
 
 def load_neo4j_w_mongo_data(clear_neo_db=False):
     if clear_neo_db:
         print("wiping neo data")
         graph_db.run("MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n, r")
         print("neo4j data wiped")
-
-
-    graph_db.run("DROP CONSTRAINT county_fips_unique")
-    graph_db.run("DROP CONSTRAINT zipcode_zipcode_unique")
-    graph_db.run("DROP CONSTRAINT state_fips_unique")
 
     print("Adding neo4j field constraints to speed up reads/writes")
     graph_db.run(
@@ -208,7 +198,9 @@ def load_neo4j_w_mongo_data(clear_neo_db=False):
     )
 
     print("Adding neo4j indicies")
-    graph_db.run("CREATE BTREE INDEX zipcode_county_fips_index IF NOT EXISTS FOR (n:Zipcode) ON (n.county_fips)")
+    graph_db.run(
+        "CREATE BTREE INDEX zipcode_county_fips_index IF NOT EXISTS FOR (n:Zipcode) ON (n.county_fips)"
+    )
 
     # plan
 

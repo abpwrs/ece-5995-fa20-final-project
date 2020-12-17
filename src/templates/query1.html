@@ -1,8 +1,5 @@
-<!doctype html>
-<title>Query1</title>
-{% assets "scss_all" %}
-<link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
-{% endassets %}
+{% extends "layout.html" %}
+{% block content %}
 
 <!-- <h1>Hello World, Harsh was Here</h1>
 {% if context.text %}
@@ -29,18 +26,11 @@
 </form> -->
 
 <form method="get" action="/">
-  <input type="submit" value="Back"/>
+  <input type="submit" value="Back" />
 </form>
 
 
-{% extends 'bootstrap/base.html' %}
-{% block scripts %}
-  {{ super() }}
-  {{ datepicker.loader() }} {# to load jQuery-ui #}
-  {{ datepicker.picker(id=".dp") }}
-{% endblock %}
-{% block content %}
-  <!-- <form name="DateStart" class="verticalform">
+<!-- <form name="DateStart" class="verticalform">
     <input type="text" value="DateStart" class="form-control dp" />
   </form>
   <form name="DateEnd" class="verticalform">
@@ -48,22 +38,22 @@
   </form> -->
 
 
-  <form name="Item_1" action="/submission" method="POST">
-    <input type="text" name=startDate value="Date Start" class="form-control dp" />
-    <input type="text" name=endDate value="Date End" class="form-control dp" />
+<form name="Item_1" action="/submission1" method="POST">
+  <input type="text" name=startDate value="Date Start" class="form-control dp" />
+  <input type="text" name=endDate value="Date End" class="form-control dp" />
 
-    <label for="choosingname">Choose name</label>
-        <select name=states>
-            {% for state in context.states %}
-                <option value="{{state}}" SELECTED>{{state}}</option>
-            {% endfor %}     
-        </select>
-        <input type="submit" value="Submit"></input>
+  <label for="choosingname">Choose State</label>
+  <select name=states>
+    {% for state in context.states %}
+    <option value="{{state}}" SELECTED>{{state}}</option>
+    {% endfor %}
+  </select>
+  <input type="submit" value="Submit">
 </form>
-{% endblock %}
 
 
 {% if context.output %}
 <h2>{{context.output}}</h2>
 {% endif %}
 
+{% endblock %}

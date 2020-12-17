@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<form method="get" action="/">
+    <input type="submit" value="Back" />
+</form>
+
+<form name="Item_3" action="/submission3" method="POST">
+    <input type="text" name=startDate value="Date Start" class="form-control dp" />
+    <input type="text" name=endDate value="Date End" class="form-control dp" />
+
+    <label for="choosingname">Choose State</label>
+    <select onchange="query_three_state_update(this.value)" name=states>
+
+        {% for state in context.states %}
+            {% if context.selected_state == state %}
+            <option value="{{state}}" selected>{{state}}</option>
+            {% else %}
+            <option value="{{state}}" >{{state}}</option>
+            {% endif %}
+        {% endfor %}
+    
+    </select>
+
+    {% if context.selected_state %}
+    <label for="choosingname">Choose County</label>
+    <select name=countys>
+        {% for county in context.countys %}
+        <option value="{{county}}" SELECTED>{{county}}</option>
+        {% endfor %}
+    </select>
+    {% endif %}
+
+    <input type="submit" value="Submit"/>
+</form>
+
+{% if context.output %}
+<h2>{{context.output}}</h2>
+{% endif %}
+
+{% endblock %}

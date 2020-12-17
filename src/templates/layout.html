@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+{% extends 'bootstrap/base.html' %}
+{% block scripts %}
+{{ super() }}
+{{ datepicker.loader() }} {# to load jQuery-ui #}
+{{ datepicker.picker(id=".dp") }}
+{% endblock %}
+
+<head>
+  {% block head %}
+  {% assets "scss_all" %}
+  <link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
+  {% endassets %}
+  {% assets "js_all" %}
+  <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %} 
+  <title>{% block title %}{% endblock %}</title>
+  {% endblock %}
+</head>
+
+<body>
+  <div id="content">{% block content %}{% endblock %}</div>
+  <div id="footer">
+    {% block footer %}{% endblock %}
+  </div>
+</body>
+
+</html>
