@@ -36,16 +36,13 @@ js = Bundle("main.js", filters="jsmin", output="gen/all.js")
 assets.register("js_all", js)
 
 
-
 # TODO:
 QUERY_ROUTES = ["/query1", "/query2", "/query3", "/query4", "/query5", "/query6"]
 QUERY_TEXT = [
     "Number of cases in a state over a date range",  # params for state, start date, and end date               - get_cases_by_state - DONE
     "Number of cases in a county over a date range",  # params for state, county, start date, and end date      - get_cases_by_county - DONE
-    
     "Rank counties by net cases",  # params for start, end date, and state                                      - get_ranked_cases_by_county - DONE
     "Rank counties by cases as percentage of population",  # params for start, end date, and state              - get_ranked_cases_by_county_as_pop_percentage
-
     "Rank states by net cases",  # params for start, end date                                                   - get_ranked_cases_by_state
     "Rank states by cases as percentage of population",  # params for start, end date,                          - get_ranked_cases_by_state_as_pop_percentage
 ]
@@ -87,12 +84,11 @@ def dropdown_submission():
     context["states"] = STATES
     print(context.get("output"))
 
-    
     state_name = request.form.get("states")
     start_date = request.form.get("startDate")
     end_date = request.form.get("endDate")
     start_date, end_date = validate_date_range_state(start_date, end_date, state_name)
-    context['output'] = get_cases_by_state(state_name, start_date, end_date)
+    context["output"] = get_cases_by_state(state_name, start_date, end_date)
 
     return render_template("query1.html", context=context)
 
@@ -105,7 +101,7 @@ def query2(state=None):
     context["query_name"] = QUERY_TEXT[1]
     counties = ["Please Insert State"]
     if state:
-        context['selected_state'] = state
+        context["selected_state"] = state
         counties = get_counties(state)
 
     context["states"] = STATES
@@ -133,9 +129,12 @@ def dropdown_submission2():
     start_date = request.form.get("startDate")
     end_date = request.form.get("endDate")
     county_name = request.form.get("countys")
-    start_date, end_date = validate_date_range_county(start_date, end_date, state_name=state_name, county_name=county_name)
-    context['output'] = get_cases_by_county(state_name, county_name, start_date, end_date)
-
+    start_date, end_date = validate_date_range_county(
+        start_date, end_date, state_name=state_name, county_name=county_name
+    )
+    context["output"] = get_cases_by_county(
+        state_name, county_name, start_date, end_date
+    )
 
     return render_template("query2.html", context=context)
 
@@ -176,7 +175,7 @@ def dropdown_submission3():
     start_date = request.form.get("startDate")
     end_date = request.form.get("endDate")
     start_date, end_date = validate_date_range_state(start_date, end_date, state_name)
-    context['output'] = get_ranked_cases_by_county(state_name, start_date, end_date)
+    context["output"] = get_ranked_cases_by_county(state_name, start_date, end_date)
     return render_template("query3.html", context=context)
 
 
@@ -215,8 +214,11 @@ def dropdown_submission4():
     start_date = request.form.get("startDate")
     end_date = request.form.get("endDate")
     start_date, end_date = validate_date_range_state(start_date, end_date, state_name)
-    context['output'] = get_ranked_cases_by_county_as_pop_percentage(state_name, start_date, end_date)
+    context["output"] = get_ranked_cases_by_county_as_pop_percentage(
+        state_name, start_date, end_date
+    )
     return render_template("query4.html", context=context)
+
 
 # Query 5
 @app.route("/query5", methods=["GET"])
@@ -239,7 +241,7 @@ def dropdown_submission5():
     start_date = request.form.get("startDate")
     end_date = request.form.get("endDate")
     # start_date, end_date = validate_date_range_state(start_date, end_date) # -- TODO: validate across all states
-    context['output'] = get_ranked_cases_by_state(start_date, end_date)
+    context["output"] = get_ranked_cases_by_state(start_date, end_date)
     return render_template("query5.html", context=context)
 
 
@@ -265,9 +267,12 @@ def dropdown_submission6():
     start_date = request.form.get("startDate")
     end_date = request.form.get("endDate")
     # start_date, end_date = validate_date_range_state(start_date, end_date) # -- TODO: validate across all states
-    context['output'] = get_ranked_cases_by_state_as_pop_percentage(start_date, end_date)
+    context["output"] = get_ranked_cases_by_state_as_pop_percentage(
+        start_date, end_date
+    )
     return render_template("query6.html", context=context)
-    
+
+
 if __name__ == "__main__":
     # Threaded option to enable multiple instances for multiple user access support
     app.run(threaded=True, port=5000)

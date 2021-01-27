@@ -202,8 +202,6 @@ def load_neo4j_w_mongo_data(clear_neo_db=False):
         "CREATE BTREE INDEX zipcode_county_fips_index IF NOT EXISTS FOR (n:Zipcode) ON (n.county_fips)"
     )
 
-    # plan
-
     # load zipcodes & extract fips for each zipcode
     load_zipcodes()
 

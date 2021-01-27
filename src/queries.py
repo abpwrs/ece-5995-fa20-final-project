@@ -128,7 +128,6 @@ def get_ranked_cases_by_county(state_name, start_date, end_date):
     return result.data()
 
 
-
 # return list of counties by net cases within a state
 def get_ranked_cases_by_county_as_pop_percentage(state_name, start_date, end_date):
     result = graph_db.run(
